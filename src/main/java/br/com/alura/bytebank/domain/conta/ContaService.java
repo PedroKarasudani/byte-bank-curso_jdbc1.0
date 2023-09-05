@@ -1,13 +1,22 @@
 package br.com.alura.bytebank.domain.conta;
 
+import br.com.alura.bytebank.ConnectionFactory;
 import br.com.alura.bytebank.domain.RegraDeNegocioException;
 import br.com.alura.bytebank.domain.cliente.Cliente;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.HashSet;
 import java.util.Set;
 
 public class ContaService {
+
+    private ConnectionFactory connection;
+
+    ContaService(){
+        this.connection = new ConnectionFactory();
+    }
 
     private Set<Conta> contas = new HashSet<>();
 
@@ -27,7 +36,13 @@ public class ContaService {
             throw new RegraDeNegocioException("Já existe outra conta aberta com o mesmo número!");
         }
 
-        contas.add(conta);
+        String sql = "INSERT INTO conta (numero, saldo, cliente_nome, cliente_cpf, cliente_email)" +
+                "VALUES (?, ?, ?, ?, ?)";
+
+        Connection conn = connection.recoverConnection();
+
+        PreparedStatement prepareStatement = conn.prepareStatement(sql);
+        prepare
     }
 
     public void realizarSaque(Integer numeroDaConta, BigDecimal valor) {
