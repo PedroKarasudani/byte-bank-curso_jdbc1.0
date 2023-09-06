@@ -12,26 +12,24 @@ import br.com.alura.bytebank.domain.cliente.Cliente;
 import br.com.alura.bytebank.domain.cliente.DadosCadastroCliente;
 
 public class ContaDAO {
-    
+
     private Connection conn;
 
     ContaDAO(Connection connection) {
         this.conn = connection;
     }
 
-    public void salvar(DadosAberturaConta dadosDaConta){
-        
+    public void salvar(DadosAberturaConta dadosDaConta) {
+
         var cliente = new Cliente(dadosDaConta.dadosCliente());
         var conta = new Conta(dadosDaConta.numero(), BigDecimal.ZERO, cliente);
-
 
         String sql = "INSERT INTO conta (numero, saldo, cliente_nome, cliente_cpf, cliente_email)" +
                 "VALUES (?, ?, ?, ?, ?)";
 
-        
         try {
             PreparedStatement prepareStatement = conn.prepareStatement(sql);
-        
+
             prepareStatement.setInt(1, conta.getNumero());
             prepareStatement.setBigDecimal(2, BigDecimal.ZERO);
             prepareStatement.setString(3, dadosDaConta.dadosCliente().nome());
@@ -44,7 +42,7 @@ public class ContaDAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        
+
     }
 
     public Set<Conta> listar() {
@@ -54,7 +52,7 @@ public class ContaDAO {
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet resultSet = ps.executeQuery();
 
-            while(resultSet.next()){
+            while (resultSet.next()) {
                 Integer numero = resultSet.getInt(1);
                 BigDecimal saldo = resultSet.getBigDecimal(2);
                 String nome = resultSet.getString(3);
@@ -91,8 +89,7 @@ public class ContaDAO {
                 String cpf = resultSet.getString(4);
                 String email = resultSet.getString(5);
 
-                DadosCadastroCliente dadosCadastroCliente =
-                        new DadosCadastroCliente(nome, cpf, email);
+                DadosCadastroCliente dadosCadastroCliente = new DadosCadastroCliente(nome, cpf, email);
                 Cliente cliente = new Cliente(dadosCadastroCliente);
 
                 conta = new Conta(numeroRecuperado, saldo, cliente);
@@ -106,7 +103,7 @@ public class ContaDAO {
         return conta;
     }
 
-    public void alterar(Integer numeroDaConta, BigDecimal valor){
+    public void alterar(Integer numeroDaConta, BigDecimal valor) {
         PreparedStatement ps;
         String sql = "UPDATE conta SET saldo = ? WHERE numero = ?";
         try {
@@ -119,11 +116,27 @@ public class ContaDAO {
             ps.close();
             conn.close();
         } catch (SQLException e) {
-            try{
+            try {
                 conn.rollback();
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void deletar(Integer numeroDaConta){
+        String sql = "DELETE FROM conta WHERE numero = ?";
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ps.setInt(1, numeroDaConta);
+
+            ps.execute();
+            ps.close();
+            conn.close();
+            
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
