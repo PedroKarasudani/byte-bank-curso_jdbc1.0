@@ -14,7 +14,7 @@ public class BytebankApplication {
 
     public static void main(String[] args) {
         var opcao = exibirMenu();
-        while (opcao != 7) {
+        while (opcao != 8) {
             try {
                 switch (opcao) {
                     case 1:
@@ -35,6 +35,9 @@ public class BytebankApplication {
                     case 6:
                         realizarDeposito();
                         break;
+                    case 7:
+                        realizarTransferencia();
+                        
                 }
             } catch (RegraDeNegocioException e) {
                 System.out.println("Erro: " +e.getMessage());
@@ -56,7 +59,8 @@ public class BytebankApplication {
                 4 - Consultar saldo de uma conta
                 5 - Realizar saque em uma conta
                 6 - Realizar depósito em uma conta
-                7 - Sair
+                7 - Realizar transferia entre contas
+                8 - Sair
                 """);
         return teclado.nextInt();
     }
@@ -134,6 +138,23 @@ public class BytebankApplication {
         service.realizarDeposito(numeroDaConta, valor);
 
         System.out.println("Depósito realizado com sucesso!");
+        System.out.println("Pressione qualquer tecla e de ENTER para voltar ao menu principal");
+        teclado.next();
+    }
+
+    private static void realizarTransferencia(){
+        System.out.println("Digite o número da conta:");
+        var numeroDaConta = teclado.nextInt();
+
+        System.out.println("Digite o número da conta para transferencia:");
+        var numeroDeContaTransferencia = teclado.nextInt();
+
+        System.out.println("Digite o valor do transferencia:");
+        var valor = teclado.nextBigDecimal();
+
+        service.realizarTransferencia(numeroDaConta, numeroDeContaTransferencia, valor);
+
+        System.out.println("Transferencia realizado com sucesso!");
         System.out.println("Pressione qualquer tecla e de ENTER para voltar ao menu principal");
         teclado.next();
     }
