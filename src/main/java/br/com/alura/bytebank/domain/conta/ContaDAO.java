@@ -65,5 +65,6 @@ public class ContaDAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        return contas;
     }
 }
